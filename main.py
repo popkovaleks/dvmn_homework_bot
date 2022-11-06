@@ -20,9 +20,8 @@ def main():
     while True:
         try:
             response = requests.get(f'{LONG_POLLING_URL}/?timestamp={timestamp}' if timestamp else LONG_POLLING_URL, headers={'Authorization': f'Token {AUTHORIZATION_TOKEN}'}, timeout=90)
-            print(response.json().get('status'))
             timestamp = response.json().get('last_attempt_timestamp')
-            print(timestamp)
+            
             if response.json().get('status') == 'found':
                 bot.send_message(text='Преподаватель проверил работу!', chat_id=CHAT_ID)
         except requests.exceptions.ReadTimeout:
