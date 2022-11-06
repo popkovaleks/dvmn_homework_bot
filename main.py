@@ -1,10 +1,10 @@
 import requests
 import telegram
+import time
 
 from environs import Env
 
 env = Env()
-
 env.read_env()
 
 
@@ -30,11 +30,16 @@ def main():
                 print(f'status: {response.status_code}, text: {response.text}')
             
             if response.json().get('status') == 'found':
-                bot.send_message(text='Преподаватель проверил работу!', chat_id=CHAT_ID)
+                for attempt in response.json().get('new_attempts'):
+                    mistake = 'Есть замечания!' if attempt.get('is_negative') else ''
+                    message = f'''Преподаватель проверил работу {attempt.get('lesson_title')}!
+                    {mistake}
+                    Ссылка на задание: {attempt.get('lesson_url')}'''
+                    bot.send_message(text=message, chat_id=CHAT_ID)
         except requests.exceptions.ReadTimeout:
-            print("Timeout occured")
+            pass
         except requests.exceptions.ConnectionError:
-            print("No internet connection")
+            time.sleep(600)
 
 
 if __name__ == '__main__':
