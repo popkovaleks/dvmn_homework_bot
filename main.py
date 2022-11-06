@@ -1,23 +1,35 @@
 import requests
 import telegram
 
+from environs import Env
 
-TOKEN = '5603108098:AAGJSV_bru0eWqkAxyRMvHIOdg4vK7FzD2o'
-URL = 'https://dvmn.org/api/user_reviews/'
-LONG_POLLING_URL = 'https://dvmn.org/api/long_polling/'
-AUTHORIZATION_TOKEN = 'b913929505c6e63108a81e9050cc0084c45fd858'
+env = Env()
 
-bot = telegram.Bot(token=TOKEN)
-timestamp = None
-while True:
-    try:
-        response = requests.get(f'{LONG_POLLING_URL}/?timestamp={timestamp}' if timestamp else LONG_POLLING_URL, headers={'Authorization': f'Token {AUTHORIZATION_TOKEN}'}, timeout=90)
-        print(response.json().get('status'))
-        timestamp = response.json().get('last_attempt_timestamp')
-        print(timestamp)
-        if response.json().get('status') == 'found':
-            bot.send_message(text='Преподаватель проверил работу!', chat_id=164255835)
-    except requests.exceptions.ReadTimeout:
-        print("Timeout occured")
-    except requests.exceptions.ConnectionError:
-        print("No internet connection")
+env.read_env()
+
+
+TELEGRAM_TOKEN = env('TELEGRAM_TOKEN')
+LONG_POLLING_URL = env('LONG_POLLING_URL')
+AUTHORIZATION_TOKEN = env('AUTHORIZATION_TOKEN')
+CHAT_ID = env('CHAT_ID')
+
+
+def main():
+    bot = telegram.Bot(token=TELEGRAM_TOKEN)
+    timestamp = None
+    while True:
+        try:
+            response = requests.get(f'{LONG_POLLING_URL}/?timestamp={timestamp}' if timestamp else LONG_POLLING_URL, headers={'Authorization': f'Token {AUTHORIZATION_TOKEN}'}, timeout=90)
+            print(response.json().get('status'))
+            timestamp = response.json().get('last_attempt_timestamp')
+            print(timestamp)
+            if response.json().get('status') == 'found':
+                bot.send_message(text='Преподаватель проверил работу!', chat_id=CHAT_ID)
+        except requests.exceptions.ReadTimeout:
+            print("Timeout occured")
+        except requests.exceptions.ConnectionError:
+            print("No internet connection")
+
+
+if __name__ == '__main__':
+    main()
