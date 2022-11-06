@@ -19,7 +19,8 @@ def main():
     timestamp = None
     while True:
         try:
-            response = requests.get(f'{LONG_POLLING_URL}/?timestamp={timestamp}' if timestamp else LONG_POLLING_URL, headers={'Authorization': f'Token {AUTHORIZATION_TOKEN}'}, timeout=90)
+            response = requests.get(f'{LONG_POLLING_URL}/?timestamp={timestamp}' if timestamp else LONG_POLLING_URL,
+                                    headers={'Authorization': f'Token {AUTHORIZATION_TOKEN}'}, timeout=90)
             timestamp = response.json().get('last_attempt_timestamp')
             
             if response.json().get('status') == 'found':
