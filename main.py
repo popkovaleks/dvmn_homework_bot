@@ -17,11 +17,17 @@ CHAT_ID = env('CHAT_ID')
 def main():
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     timestamp = None
+    
     while True:
         try:
-            response = requests.get(f'{LONG_POLLING_URL}/?timestamp={timestamp}' if timestamp else LONG_POLLING_URL,
+            payload = {'timestamp': timestamp}
+            response = requests.get(f'{LONG_POLLING_URL}',
+                                    params=payload,
                                     headers={'Authorization': f'Token {AUTHORIZATION_TOKEN}'}, timeout=90)
             timestamp = response.json().get('last_attempt_timestamp')
+            
+            if response.status_code != 200:
+                print(f'status: {response.status_code}, text: {response.text}')
             
             if response.json().get('status') == 'found':
                 bot.send_message(text='Преподаватель проверил работу!', chat_id=CHAT_ID)
