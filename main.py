@@ -6,28 +6,37 @@ from environs import Env
 
 
 def main():
+    env = Env()
+    env.read_env()
+
+    TELEGRAM_TOKEN = env('TELEGRAM_TOKEN')
+    LONG_POLLING_URL = env('LONG_POLLING_URL')
+    AUTHORIZATION_TOKEN = env('AUTHORIZATION_TOKEN')
+    TG_CHAT_ID = env('TG_CHAT_ID')
+
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     timestamp = None
 
     while True:
         try:
             payload = {'timestamp': timestamp}
-            response = requests.get(f'{LONG_POLLING_URL}',
-                                    params=payload,
-                                    headers={
+            resp_orig = requests.get(f'{LONG_POLLING_URL}',
+                                     params=payload,
+                                     headers={
                                         'Authorization': f'Token \
                                             {AUTHORIZATION_TOKEN}'
                                         },
-                                    timeout=90)
+                                     timeout=90)
 
-            resp_json = response.json()
-            timestamp = resp_json.get('last_attempt_timestamp')
+            response = resp_orig.json()
+            timestamp = response.get('last_attempt_timestamp')
 
-            if response.status_code != 200:
-                print(f'status: {response.status_code}, text: {response.text}')
+            if resp_orig.status_code != 200:
+                print(f'status: {resp_orig.status_code},\
+                      text: {resp_orig.text}')
 
-            if resp_json.get('status') == 'found':
-                for attempt in resp_json.get('new_attempts'):
+            if response.get('status') == 'found':
+                for attempt in response.get('new_attempts'):
                     mistake = 'Есть замечания!' if attempt.get('is_negative') \
                         else ''
                     message = f'''Преподаватель проверил работу \
@@ -43,12 +52,4 @@ def main():
 
 
 if __name__ == '__main__':
-    env = Env()
-    env.read_env()
-
-    TELEGRAM_TOKEN = env('TELEGRAM_TOKEN')
-    LONG_POLLING_URL = env('LONG_POLLING_URL')
-    AUTHORIZATION_TOKEN = env('AUTHORIZATION_TOKEN')
-    TG_CHAT_ID = env('TG_CHAT_ID')
-
     main()
