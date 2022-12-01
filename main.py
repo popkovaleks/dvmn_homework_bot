@@ -1,9 +1,10 @@
 import requests
 import telegram
 import time
+import logging
 
 from environs import Env
-
+from logger import TelegramLogHandler
 
 def main():
     env = Env()
@@ -15,6 +16,11 @@ def main():
     TG_CHAT_ID = env('TG_CHAT_ID')
 
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
+
+    logger = logging.getLogger('Logger')
+    logger.setLevel(logging.INFO)
+    logger.addHandler(TelegramLogHandler(bot, TG_CHAT_ID))
+    logger.info('Бот запущен')
     timestamp = None
 
     while True:
@@ -49,6 +55,8 @@ def main():
             pass
         except requests.exceptions.ConnectionError:
             time.sleep(600)
+        except Exception as e:
+            logger.error(e)
 
 
 if __name__ == '__main__':
