@@ -56,7 +56,7 @@ def main():
         except requests.exceptions.ConnectionError:
             time.sleep(600)
         except Exception as e:
-            logger.error(e)
+            logger.error(e, exc_info=True)
 
 
 if __name__ == '__main__':
