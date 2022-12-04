@@ -6,6 +6,9 @@ import logging
 from environs import Env
 from logger import TelegramLogHandler
 
+
+logger = logging.getLogger('Logger')
+
 def main():
     env = Env()
     env.read_env()
@@ -17,7 +20,7 @@ def main():
 
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
 
-    logger = logging.getLogger('Logger')
+    
     logger.setLevel(logging.INFO)
     logger.addHandler(TelegramLogHandler(bot, TG_CHAT_ID))
     logger.info('Бот запущен')
@@ -56,7 +59,7 @@ def main():
         except requests.exceptions.ConnectionError:
             time.sleep(600)
         except Exception as e:
-            logger.error(e, exc_info=True)
+            logger.exception(e)
 
 
 if __name__ == '__main__':
