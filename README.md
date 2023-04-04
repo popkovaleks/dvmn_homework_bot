@@ -3,10 +3,10 @@
 
 Файл .env:
 ```
-TELEGRAM_TOKEN = <токен телеграм бота>
-LONG_POLLING_URL = 'https://dvmn.org/api/long_polling/'
-AUTHORIZATION_TOKEN = <токен авторизации на сайте dvmn.org>
-TG_CHAT_ID = <идентификатор чата пользователя>
+TELEGRAM_TOKEN=<токен телеграм бота>
+LONG_POLLING_URL='https://dvmn.org/api/long_polling/'
+AUTHORIZATION_TOKEN=<токен авторизации на сайте dvmn.org>
+TG_CHAT_ID=<идентификатор чата пользователя>
 ```
 
 ## Токен telegram-бота
